@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        sample: 'url("/img/icon.png")',
+        sample: 'url("/img/sidebar/icon.png")',
       },
       fontFamily: {
         body: ["Roboto Condensed", "sans-serif"],

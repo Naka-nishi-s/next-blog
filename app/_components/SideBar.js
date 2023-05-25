@@ -3,37 +3,37 @@ import Link from "next/link";
 
 export const SideBar = () => {
   return (
-    <div className="flex flex-col justify-start items-center gap-6 w-1/12 pt-6 h-full bg-cyan-100">
+    <div className="flex flex-col justify-start items-center gap-6 w-1/12 pt-6 bg-cyan-100 border-2 border-slate-300">
       <Link href={"/"}>
         <Image
-          src={"/img/home.png"}
+          src={"/img/sidebar/home.png"}
           height={60}
           width={60}
           alt="Good Image"
           className="p-2"
         />
       </Link>
-      <Link href={"/pages/mypage"}>
+      <Link href={"/mypage"}>
         <Image
-          src={"/img/human.png"}
+          src={"/img/sidebar/human.png"}
           height={60}
           width={60}
           alt="Good Image"
           className="p-2"
         />
       </Link>
-      <Link href={"/pages/search"}>
+      <Link href={"/search"}>
         <Image
-          src={"/img/search.png"}
+          src={"/img/sidebar/search.png"}
           height={60}
           width={60}
           alt="Good Image"
           className="p-2"
         />
       </Link>
-      <Link href={"/pages/goods"}>
+      <Link href={"/goods"}>
         <Image
-          src={"/img/good.png"}
+          src={"/img/sidebar/good.png"}
           height={60}
           width={60}
           alt="Good Image"
