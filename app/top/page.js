@@ -24,23 +24,25 @@ const Page = () => {
             </h2>
           </article>
         </Link>
-        <article className="flex flex-col gap-10">
-          <Image
-            src={"/img/blog/sky.png"}
-            alt="sample image"
-            width={100}
-            height={100}
-            sizes="100vw"
-            style={{ width: "100%", height: "auto" }}
-          />
-          <h2>
-            タイトルタイトルタイトルタイトル タイトルタイトルタイトルタイトル
-            <br />
-            <br />
-            タイトルタイトルタイトルタイトル タイトルタイトルタイトルタイトル
-            タイトルタイトルタイトルタイトル
-          </h2>
-        </article>
+        <Link href={"/article/1"}>
+          <article className="flex flex-col gap-10">
+            <Image
+              src={"/img/blog/sky.png"}
+              alt="sample image"
+              width={100}
+              height={100}
+              sizes="100vw"
+              style={{ width: "100%", height: "auto" }}
+            />
+            <h2>
+              タイトルタイトルタイトルタイトル タイトルタイトルタイトルタイトル
+              <br />
+              <br />
+              タイトルタイトルタイトルタイトル タイトルタイトルタイトルタイトル
+              タイトルタイトルタイトルタイトル
+            </h2>
+          </article>
+        </Link>
       </section>
 
       <section className="flex gap-20 p-16 bg-slate-50">

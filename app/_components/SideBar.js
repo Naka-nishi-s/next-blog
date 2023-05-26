@@ -9,7 +9,7 @@ export const SideBar = () => {
           src={"/img/sidebar/home.png"}
           height={60}
           width={60}
-          alt="Good Image"
+          alt="Home Image"
           className="p-2"
         />
       </Link>
@@ -18,7 +18,7 @@ export const SideBar = () => {
           src={"/img/sidebar/human.png"}
           height={60}
           width={60}
-          alt="Good Image"
+          alt="Human Image"
           className="p-2"
         />
       </Link>
@@ -27,7 +27,7 @@ export const SideBar = () => {
           src={"/img/sidebar/search.png"}
           height={60}
           width={60}
-          alt="Good Image"
+          alt="Search Image"
           className="p-2"
         />
       </Link>
@@ -36,7 +36,16 @@ export const SideBar = () => {
           src={"/img/sidebar/good.png"}
           height={60}
           width={60}
-          alt="Good Image"
+          alt="Goods Image"
+          className="p-2"
+        />
+      </Link>
+      <Link href={"/create"}>
+        <Image
+          src={"/img/sidebar/pen.png"}
+          height={60}
+          width={60}
+          alt="Pen Image"
           className="p-2"
         />
       </Link>
