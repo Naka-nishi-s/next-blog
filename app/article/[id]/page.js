@@ -1,25 +1,36 @@
 "use client";
-import { Fragment } from "react";
 
-const Page = async ({ params }) => {
-  // ユーザーデータ取得
-  const response = await fetch("/api/user");
+import { useEffect, useState } from "react";
 
-  // jsonに修正
-  const userData = await response.json();
+const Page = ({ params }) => {
+  const getData = async () => {
+    // 記事データ取得
+    const articlesData = await fetch("/api/article");
+
+    // jsonに修正
+    const article = await articlesData.json();
+
+    // 記事データを挿入
+    setArticles(article);
+  };
+
+  // articleを作成
+  const [articles, setArticles] = useState(null);
+
+  useEffect(() => {
+    getData();
+  }, []);
 
   return (
     <div>
       <h1>記事一覧</h1>
       <h2>記事ID: {params.id}</h2>
-      <ul>
-        {userData.map((user) => (
-          <Fragment key={user.id}>
-            <li>{user.id}</li>
-            <li>{user.title}</li>
-          </Fragment>
-        ))}
-      </ul>
+      {articles && (
+        <ul>
+          <li>{articles.CategoryId.N}</li>
+          <li>{articles.Title.S}</li>
+        </ul>
+      )}
     </div>
   );
 };
