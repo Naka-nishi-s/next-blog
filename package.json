@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.338.0",
+    "@aws-sdk/client-s3": "^3.341.0",
+    "@aws-sdk/s3-request-presigner": "^3.341.0",
     "autoprefixer": "10.4.14",
     "aws-sdk": "^2.1385.0",
     "eslint": "8.41.0",

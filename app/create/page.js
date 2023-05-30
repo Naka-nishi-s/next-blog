@@ -51,6 +51,26 @@ const Page = () => {
     }
   };
 
+  const getText = async () => {
+    // コンテンツ取得
+    const contents = await quillInstance.current.getContents();
+
+    // fetchでデータをDynamoDBに飛ばす
+    const response = await fetch("/api/create", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(contents),
+    });
+
+    if (response.status === 200) {
+      alert("完了！");
+    } else {
+      alert("残念！");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-3 p-3 bg-white h-full">
       <div className="text-end">
@@ -60,6 +80,7 @@ const Page = () => {
         >
           記事を削除する
         </button>
+        <button onClick={getText}>記事内容を確認</button>
       </div>
       <div>
         <div ref={quillElement}></div>
