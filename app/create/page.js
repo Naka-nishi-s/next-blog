@@ -1,14 +1,21 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
 import Quill from "quill";
 import "quill/dist/quill.snow.css";
 
-import { useEffect, useRef } from "react";
-
 const Page = () => {
-  // Quillを入れる場所を確保
-  const quillElement = useRef();
+  // ルーターを作成
+  const router = useRouter();
 
+  // タイトルと著者名を格納
+  const [title, setTitle] = useState("");
+  const [author, setAuthor] = useState("");
+
+  // Quillの記事内容を入れる場所を確保
+  const quillElement = useRef();
   // Quillの本体を格納
   const quillInstance = useRef();
 
@@ -51,24 +58,74 @@ const Page = () => {
     }
   };
 
+  /**
+   * アラートする
+   * @param なし
+   * @returns なし
+   */
+  const alertError = () => {
+    alert("うまくいきませんでした。\n時間を置いて再度お試しください。");
+  };
+
   const getText = async () => {
     // コンテンツ取得
-    const contents = await quillInstance.current.getContents();
+    const content = await quillInstance.current.getContents();
 
-    // fetchでデータをDynamoDBに飛ばす
+    // 現在時刻を設定
+    const updateDate = await new Date();
+
+    // サーバに送るjsonを作成
+    const sendJson = {
+      title,
+      author,
+      content: content.ops,
+      updateDate: updateDate.toLocaleString(),
+    };
+
+    // fetchでデータをDynamoDBに飛ばす;
     const response = await fetch("/api/create", {
       method: "POST",
       headers: {
         "content-type": "application/json",
       },
-      body: JSON.stringify(contents),
+      body: JSON.stringify(sendJson),
     });
 
-    if (response.status === 200) {
-      alert("完了！");
-    } else {
-      alert("残念！");
+    // fetch中にエラー起こったらアラートする
+    if (!response.ok) {
+      return alertError();
     }
+
+    if (response.status !== 204) {
+      // ステータスコードが204以外(異常終了のとき)
+      // レスポンスをJSONに変える
+      const data = await response.json();
+
+      // エラーメッセージを表示
+      console.log(data.error);
+      return alertError();
+    } else {
+      // 正常終了のとき
+      // アラートしてトップにリダイレクトする
+      alert("記事の保存に成功しました。\nトップに戻ります。");
+      router.push("/top");
+    }
+  };
+
+  /**
+   * タイトルを変更する
+   * @param {*} e
+   */
+  const handleChangeTitle = (e) => {
+    setTitle(e.target.value);
+  };
+
+  /**
+   * 著者を変更する
+   * @param {*} e
+   */
+  const handleChangeAuthor = (e) => {
+    setAuthor(e.target.value);
   };
 
   return (
@@ -80,7 +137,28 @@ const Page = () => {
         >
           記事を削除する
         </button>
-        <button onClick={getText}>記事内容を確認</button>
+      </div>
+      <div>
+        <label>
+          タイトル：
+          <input
+            type="text"
+            className="border-2"
+            value={title}
+            onChange={handleChangeTitle}
+          />
+        </label>
+        <label>
+          著者：
+          <input
+            type="text"
+            className="border-2"
+            value={author}
+            onChange={handleChangeAuthor}
+          />
+        </label>
+
+        <button onClick={getText}>記事を送信する</button>
       </div>
       <div>
         <div ref={quillElement}></div>
