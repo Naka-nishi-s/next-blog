@@ -1,28 +1,61 @@
-import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
+import { ddbClient } from "@/app/_services/awsService";
+import { PutItemCommand } from "@aws-sdk/client-dynamodb";
 import { NextResponse } from "next/server";
+import { v4 as uuidV4 } from "uuid";
 
-export async function POST(req) {
-  console.log("データを無事に取得しました！");
-  console.log(req.cookies.getAll());
+export async function POST(req, res) {
+  // リクエストを取得し、jsonに変換
+  const request = await req.json();
 
-  // // クライアントを作成
-  // const client = new DynamoDBClient({
-  //   credentials: {
-  //     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  //     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  //   },
-  //   region: "ap-northeast-1",
-  // });
-  // // コマンド(SQL的な)を設定
-  // const command = new GetItemCommand({
-  //   TableName: "Article",
-  //   Key: {
-  //     CategoryId: { N: "0" },
-  //     Title: { S: "すごい技術" },
-  //   },
-  // });
-  // // コマンドを実行(execute)
-  // const data = await client.send(command);
-  // //
-  // return NextResponse.json(data.Item);
+  //TODO 内容を全取得 → 画像名も控える
+  // 画像をS3へ = 同期でDynamoにデータ格納
+
+  // リクエスト内容(例)
+  // {
+  //   title: 'sssssssss',
+  //   author: 'dddddd',
+  //   content: [ { insert: 'aaaaaaaa\n' } ],
+  //   updateDate: '2023/6/2 1:52:46'
+  // }
+
+  const id = await uuidV4();
+
+  const command = new PutItemCommand({
+    TableName: process.env.DB_TABLE_NAME,
+    Item: {
+      ID: { S: id },
+      Title: { S: request.title },
+      Author: { S: request.author },
+      Content: { S: JSON.stringify(request.content) },
+      UpdateDate: { S: request.updateDate },
+    },
+  });
+
+  try {
+    // データを挿入する
+    await ddbClient.send(command);
+  } catch (e) {
+    console.log(e);
+    // エラーメッセージ
+    let errMessage = "";
+    let statusCode = 500;
+
+    // Key情報などの接続情報が誤っている場合
+    if (e.name === "ValidationException") {
+      errMessage = "DynamoDBとの接続情報が間違っています";
+      statusCode = 400;
+    }
+
+    // 不明なエラーの場合
+    if (!errMessage) {
+      errMessage = "DB接続時にエラーが発生しました。";
+    }
+    console.log("エラーです。");
+    // エラーをフロントに返す
+    return new NextResponse(JSON.stringify({ error: errMessage }), {
+      status: statusCode,
+    });
+  }
+
+  return new NextResponse(null, { status: 204 });
 }
