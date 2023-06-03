@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Header } from "./_components/Header";
 import { Footer } from "./_components/Footer";
 import { SideBar } from "./_components/SideBar";
+import { AdSenseBar } from "./_components/AdsenceBar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,8 @@ export default function RootLayout({ children }) {
         <Header />
         <main className="font-body flex min-h-screen flex-row">
           <SideBar />
-          <div className="bg-cyan-100 w-11/12">{children}</div>
+          <div className="bg-cyan-100 flex-grow w-full">{children}</div>
+          <AdSenseBar />
         </main>
         <Footer />
       </body>

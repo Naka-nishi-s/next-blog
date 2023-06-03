@@ -25,6 +25,7 @@ export async function POST(req, res) {
     Item: {
       ID: { S: id },
       Title: { S: request.title },
+      ImageData: { S: request.imageData },
       Author: { S: request.author },
       Content: { S: JSON.stringify(request.content) },
       UpdateDate: { S: request.updateDate },
@@ -50,7 +51,7 @@ export async function POST(req, res) {
     if (!errMessage) {
       errMessage = "DB接続時にエラーが発生しました。";
     }
-    console.log("エラーです。");
+
     // エラーをフロントに返す
     return new NextResponse(JSON.stringify({ error: errMessage }), {
       status: statusCode,
