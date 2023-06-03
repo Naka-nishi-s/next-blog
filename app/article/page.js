@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
+import { QuillDeltaToHtmlConverter } from "quill-delta-to-html";
 import { useEffect, useState } from "react";
 
 const Page = () => {
@@ -14,6 +15,8 @@ const Page = () => {
   const [imageURL, setImageURL] = useState("");
   // 記事情報
   const [articles, setArticles] = useState("");
+  // html情報
+  const [htmlText, setHtmlText] = useState("");
 
   /**
    * topページにリダイレクトする
@@ -49,32 +52,41 @@ const Page = () => {
 
     // 取得した文字列型の記事データをjsonに修正
     const article = await articlesData.json();
-    console.log(article);
+
+    // 画像取得
+    const imageResponse = await fetch("/api/gazou", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ fileName: article.ImageData.S }),
+    });
+
+    // 画像へのURL
+    const imageURL = await imageResponse.text();
+    setImageURL(imageURL);
 
     // サーバー側でエラーが起こった場合はerrorにエラーメッセージが入っている
     // その場合はtopにリダイレクト
     if (article.error) {
       //TODO エラーを404に渡して表示させてあげるとGood
-      console.log(article.error);
+      alert(article.error);
       redirectToTop();
-    } else {
-      // 記事データを挿入
-      setArticles(article);
     }
+
+    // Contentのみ取り出す、その際にparseする
+    const content = await JSON.parse(article.Content.S);
+
+    // HTMLにコンバートする
+    let cfg = {};
+    const converter = new QuillDeltaToHtmlConverter(content, cfg);
+    const html = await converter.convert();
+
+    // HTMLをセットする
+    setHtmlText(html);
+    // 記事データを挿入
+    setArticles(article);
   };
-
-  /**
-   * S3から画像データを取得して表示
-   */
-  const setImageURLFromS3 = async () => {
-    const response = await fetch("/api/gazou");
-    const imageData = await response.json();
-
-    // 画像のURLをセット
-    setImageURL(imageData.signedURL);
-  };
-
-  //TODO:画像とテキストを一つのAPIで取得する
 
   useEffect(() => {
     setParamFromDB();
@@ -82,24 +94,36 @@ const Page = () => {
   }, []);
 
   return (
-    <div>
-      <h1>{articles && articles.Title.S}</h1>
-      <h2>記事ID: {articles && articles.ID.S}</h2>
-      <h2>最終更新日: {articles && articles.UpdateDate.S}</h2>
-      <h2>筆者: {articles && articles.Author.S}</h2>
+    <div className="flex flex-col p-4 bg-white shadow-md rounded-lg">
       {/* 画像表示 */}
-      <div>
+      <div className="mb-6 w-full">
         {imageURL && (
-          <Image src={imageURL} width={100} height={100} alt="blog_image" />
+          <Image
+            className="rounded-lg"
+            src={imageURL}
+            // layout="responsive"
+            width={800} // 画像の元のアスペクト比に応じてこれらの値を設定します
+            height={400} // 画像の元のアスペクト比に応じてこれらの値を設定します
+            alt="blog_image"
+          />
         )}
       </div>
-      {/* ここから記事表示 */}
 
-      <div>
-        <ul>
-          <li>{articles && articles.Content.S}</li>
-        </ul>
+      <h1 className="text-4xl font-bold mb-2 text-gray-800">
+        {articles && articles.Title.S}
+      </h1>
+      <div className="text-gray-600 mb-4">
+        <h2 className="inline mr-2">筆者: {articles && articles.Author.S}</h2>
+        <h2 className="inline">
+          最終更新日: {articles && articles.UpdateDate.S}
+        </h2>
       </div>
+
+      {/* ここから記事表示 */}
+      <div
+        className="prose lg:prose-xl w-full"
+        dangerouslySetInnerHTML={{ __html: htmlText }}
+      ></div>
     </div>
   );
 };

@@ -24,22 +24,24 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 p-10">
       {articles.map((article) => (
         <Link
           href={`/article?id=${article.ID.S}&title=${article.Title.S}`}
           key={article.ID.S}
         >
-          <article className="flex flex-col gap-10">
-            <Image
-              src={"/img/blog/sky.png"}
-              alt="sample image"
-              width={100}
-              height={100}
-              sizes="100vw"
-              style={{ width: "100%", height: "auto" }}
-            />
-            <h2>{article.Title.S}</h2>
+          <article className="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition duration-200 ease-in-out">
+            <div className="relative h-48">
+              <Image
+                src={"/img/blog/sky.png"}
+                alt="sample image"
+                fill
+                cover="true"
+              />
+            </div>
+            <h2 className="font-bold text-xl p-4 hover:text-blue-600">
+              {article.Title.S}
+            </h2>
           </article>
         </Link>
       ))}
